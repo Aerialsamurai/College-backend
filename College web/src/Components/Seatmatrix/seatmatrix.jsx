@@ -16,14 +16,20 @@ const Seatmatrix = () => {
   const [selectedGender, setSelectedGender] = useState('Gender-Neutral');
   const [filteredData, setFilteredData] = useState([]);
   const [links, setLinks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/seatmatrix/68793bd0ce83467e32d0508c')
+    axios.get('https://college-backend-la5k.onrender.com/seatmatrix')
       .then(res => {
         setSeatData(res.data.branches || []);
         setLinks(res.data.officialSeatMatrixLinks || []);
+        setLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        setError('Failed to load seat matrix');
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -34,6 +40,9 @@ const Seatmatrix = () => {
     );
     setFilteredData(filtered);
   }, [selectedCategory, selectedGender, seatData]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div id="seatmatrix">
@@ -73,26 +82,24 @@ const Seatmatrix = () => {
             </select>
           </div>
         </div>
-        <table className="seat-table">
+        <table className="seatmatrix-table">
           <thead>
             <tr>
               <th>Branch</th>
+              <th>Category</th>
+              <th>Gender</th>
               <th>Seats</th>
             </tr>
           </thead>
           <tbody>
-            {filteredData.length ? (
-              filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.branch}</td>
-                  <td>{item.seats}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="2" className="no-data">No data available for selected filters.</td>
+            {filteredData.map((item, idx) => (
+              <tr key={idx}>
+                <td>{item.branch}</td>
+                <td>{item.category}</td>
+                <td>{item.gender}</td>
+                <td>{item.seats}</td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>

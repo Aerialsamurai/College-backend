@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const Fee = require('../models/Fee');
+const Hero = require('../models/Hero');
 
 router.get('/', async (req, res) => {
   try {
-    const fees = await Fee.find();
-    res.json({ fees });
+    const hero = await Hero.findOne();
+    res.json(hero);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch fees data' });
+    res.status(500).json({ error: 'Failed to fetch hero data' });
   }
 });
 
